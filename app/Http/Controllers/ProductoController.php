@@ -14,6 +14,8 @@ use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Milon\Barcode\DNS1D;
+use Picqer;
 
 class ProductoController extends Controller implements HasMiddleware
 {
@@ -92,7 +94,25 @@ class ProductoController extends Controller implements HasMiddleware
             DB::rollBack();
         }
 
+        $number = mt_rand(10000000,999999999);
+
+        
+
+        if($this->ProductoCodeExists($number)){
+            $number = mt_rand(10000000,999999999);
+        }
+
+        $request['codigo'] = $number;
+
+       
+
+        Producto::create($request->all());
+
         return redirect()->route('productos.index')->with('success', 'Producto Registrado');
+    }
+
+    public function ProductoCodeExists($number){
+        return Producto::wherecodigo($number)->exists();
     }
 
     /**

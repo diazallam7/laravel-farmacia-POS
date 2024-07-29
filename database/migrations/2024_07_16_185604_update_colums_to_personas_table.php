@@ -40,7 +40,7 @@ return new class extends Migration
         });
         
         Schema::table('personas', function (Blueprint $table) {
-            $table->dropColumn('numero_documento');;
+            $table->dropColumn('numero_documento',20);
         });
     }
 };

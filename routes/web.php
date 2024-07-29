@@ -38,7 +38,7 @@ Route::post('/login', [loginController::class, 'login']);
 Route::get('/logout', [logoutController::class, 'logout'])->name('logout');
 
 Route::get('/401', function () {
-    return view('pages.401');
+   return view('pages.401');
 });
 
 Route::get('/404', function () {

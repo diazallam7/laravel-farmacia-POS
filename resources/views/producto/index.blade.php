@@ -65,7 +65,8 @@
                             @foreach ($productos as $item)
                                 <tr>
                                     <td>
-                                        {{ $item->codigo }}
+                                        {!! DNS1D::getBarcodeHTML("$item->codigo", 'PHARMA')!!}
+                                        p - {{$item->codigo}}
                                     </td>
                                     <td>
                                         {{ $item->nombre }}

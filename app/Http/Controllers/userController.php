@@ -17,11 +17,11 @@ use Spatie\Permission\Models\Role;
 
 
 
-class userController extends Controller implements HasMiddleware
+class userController extends Controller //implements HasMiddleware
 {
 
 
-    public static function middleware(): array {
+    /*public static function middleware(): array {
 
         return [
             
@@ -30,7 +30,7 @@ class userController extends Controller implements HasMiddleware
          new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('editar-user'),only:['edit','update']),
          new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('eliminar-user'), only:['destroy']),
         ];
-     }
+     }*/
 
 
     /**

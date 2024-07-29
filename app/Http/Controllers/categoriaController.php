@@ -13,7 +13,7 @@ use App\Models\Categoria;
 use Illuminate\Support\Facades\DB;
 
 class categoriaController extends Controller implements HasMiddleware
-{
+{   
 
     public static function middleware(): array {
 

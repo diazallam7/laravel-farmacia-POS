@@ -38,7 +38,7 @@
         </ol>
         <div class="mb-4">
             <a href="{{ route('ventas.create') }}"><button type="button" class="btn btn-primary">Añadir Nueva
-                    Compra</button></a>
+                    Venta</button></a>
         </div>
 
         <div class="card mb-4">
