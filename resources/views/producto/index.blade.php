@@ -18,7 +18,7 @@
                     toast: true,
                     position: "top-end",
                     showConfirmButton: false,
-                    timer: 1500,
+                    timer: 3000,
                     timerProgressBar: true,
                     didOpen: (toast) => {
                         toast.onmouseenter = Swal.stopTimer;
@@ -52,11 +52,13 @@
                     <table id="datatablesSimple", class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Codigo</th>
+                                <th>Nro Boleta</th>
                                 <th>Nombre</th>
-                                <th>Marca</th>
-                                <th>Presentacion</th>
-                                <th>Categorias</th>
+                                <th>Cedula</th>
+                                <th>Telefono</th>
+                                <th>Direccion</th>
+                                <th>Producto</th>
+                                <th>Total</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -65,35 +67,34 @@
                             @foreach ($productos as $item)
                                 <tr>
                                     <td>
-                                        {!! DNS1D::getBarcodeHTML("$item->codigo", 'PHARMA')!!}
-                                        p - {{$item->codigo}}
+                                        {{$item->codigo}}
+
                                     </td>
                                     <td>
                                         {{ $item->nombre }}
                                     </td>
                                     <td>
-                                        {{ $item->marca->caracteristica->nombre }}
+                                        {{ $item->cedula }}
                                     </td>
                                     <td>
-                                        {{ $item->presentacione->caracteristica->nombre }}
+                                        {{ $item->numero_celular}} 
                                     </td>
                                     <td>
-                                        @foreach ($item->categorias as $category)
-                                            <div class="cont">
-                                                <div class="row">
-                                                    <span class="m-1 rounded-pill p-1 bg-secondary text-white text-center"
-                                                        style="display: block; width: 100px; margin: 0 auto; text-align: center; padding: 10px;">
-                                                        {{ $category->caracteristica->nombre }}</span>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                        {{ $item->descripcion }}
+                                    </td>
+                                    <td>
+                                        {{ $item->nombre_del_producto }}
+                                    </td>
+                                    <td>
+                                        {{ $item->precio_compra }}
                                     </td>
                                     <td style="width: 100px;">
                                         @if ($item->estado == 1)
                                             <span class="fw-bolder p-1 rounded bg-success text-white"
-                                                style="display: block; width: 80px; margin: 0 auto; text-align: center; padding: 10px;">Activo</span>
+                                                style="display: block; width: 80px; margin: 0 auto; text-align: center; padding: 10px;">Empeñado</span>
                                         @else
-                                            <span class="fw-bolder p-1 rounded bg-secondary text-white">Eliminado</span>
+                                            <span class="fw-bolder p-1 rounded bg-secondary text-white"
+                                            style="display: block; width: 80px; margin: 0 auto; text-align: center; padding: 10px;">Stock</span>
                                         @endif
                                     </td>
                                     <td>
@@ -107,12 +108,13 @@
 
                                             @if ($item->estado == 1)
                                                 <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                                                    data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
+                                                    data-bs-target="#confirmModal-{{ $item->id }}">A Stock</button>
                                             @else
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                                    data-bs-target="#confirmModal-{{ $item->id }}">Restaurar</button>
+                                                    data-bs-target="#confirmModal-{{ $item->id }}">Empeño</button>
                                             @endif
-
+                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#confirmModal1-{{ $item->id }}">Eliminar</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -131,27 +133,27 @@
                                             <div class="modal-body">
                                                 <div class="row mb-3">
                                                     <label for=""><span
-                                                            class="fw-bolder">Descripcion:</span>{{ $item->descripcion }}</label>
+                                                            class="fw-bolder">Categoria:</span> @foreach ($item->categorias as $category) 
+                                                            <span>{{ $category->caracteristica->nombre }}</span>
+                                                        @endforeach</label>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <label for=""><span
+                                                            class="fw-bolder">Marca:</span> {{$item->marca->caracteristica->nombre}}</label>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for=""><span class="fw-bolder">Fecha de
-                                                            Vencimiento:</span>{{ $item->fecha_vencimiento == '' ? 'No tiene' : $item->fecha_vencimiento }}</label>
+                                                            Entrega:</span>{{ $item->fecha_vencimiento == '' ? 'No tiene' : $item->fecha_vencimiento }}</label>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <label for="">
+                                                        <span class="fw-bolder">Fecha Limite:</span> 
+                                                        {{ $item->fecha_vencimiento == '' ? 'No tiene' : \Carbon\Carbon::parse($item->fecha_vencimiento)->addMonths(3)->format('Y-m-d') }}
+                                                    </label>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for=""><span
                                                             class="fw-bolder">Stock:</span>{{ $item->stock }}</label>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <label class="fw-bolder">Imagen:</label>
-                                                    <div>
-                                                        @if ($item->img_path != null)
-                                                            <img src="{{ Storage::url('public/productos/' . $item->img_path) }}"
-                                                                alt="{{ $item->nombre }}"
-                                                                class="img-fluid .img-thumbnail border border-4 rouded">
-                                                        @else
-                                                            <img src="" alt="{{ $item->nombre }}">
-                                                        @endif
-                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -173,12 +175,38 @@
                                                     aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                {{ $item->estado == 1 ? 'Quieres eliminar este Producto?' : 'Quieres restaurar este Producto?' }}
+                                                {{ $item->estado == 1 ? 'Pasar a Stock este Producto?' : 'Pasar a Empeño este Producto?' }}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">Cerrar</button>
                                                 <form action="{{ route('productos.destroy', ['producto' => $item->id]) }}"
+                                                    method="post">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="confirmModal1-{{ $item->id }}" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ $item->estado == 1 ? 'Quieres eliminar este producto?' : '' }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cerrar</button>
+                                                <form action="{{ route('productos.destroya', $item->id) }}"
                                                     method="post">
                                                     @method('DELETE')
                                                     @csrf

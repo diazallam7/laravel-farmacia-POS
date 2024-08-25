@@ -60,6 +60,7 @@ class clienteController extends Controller implements HasMiddleware
         } catch (Exception $e) {
             DB::rollBack();
         }
+
         return redirect()->route('clientes.index')->with('success', 'Cliente Registrado');
     }
 

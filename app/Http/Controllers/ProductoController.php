@@ -7,15 +7,16 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\StoreProductoRequest;
 use App\Http\Requests\UpdateProductoRequest;
+use App\Http\Requests\UpdateProductoRequest2;
 use App\Models\Categoria;
 use App\Models\Marca;
-use App\Models\Presentacione;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Milon\Barcode\DNS1D;
 use Picqer;
+use Carbon\Carbon;
 
 class ProductoController extends Controller implements HasMiddleware
 {
@@ -37,8 +38,10 @@ class ProductoController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $productos = Producto::with(['categorias.caracteristica', 'marca.caracteristica', 'presentacione.caracteristica'])->latest()->get();
+        $productos = Producto::with(['categorias.caracteristica', 'marca.caracteristica'])->latest()->get();
+
         return view('producto.index', compact('productos'));
+
     }
 
     /**
@@ -50,15 +53,11 @@ class ProductoController extends Controller implements HasMiddleware
             ->select('marcas.id as id', 'c.nombre as nombre')
             ->where('c.estado', 1)
             ->get();
-        $presentaciones = Presentacione::join('caracteristicas as c', 'presentaciones.caracteristica_id', '=', 'c.id')
-            ->select('presentaciones.id as id', 'c.nombre as nombre')
-            ->where('c.estado', 1)
-            ->get();
         $categorias = Categoria::join('caracteristicas as c', 'categorias.caracteristica_id', '=', 'c.id')
             ->select('categorias.id as id', 'c.nombre as nombre')
             ->where('c.estado', 1)
             ->get();
-        return view('producto.create', compact('marcas', 'presentaciones', 'categorias'));
+        return view('producto.create', compact('marcas', 'categorias'));
     }
 
     /**
@@ -78,11 +77,16 @@ class ProductoController extends Controller implements HasMiddleware
             $producto->fill([
                 'codigo' => $request->codigo,
                 'nombre' => $request->nombre,
+                'precio_compra' => $request->precio_compra,
                 'descripcion' => $request->descripcion,
                 'fecha_vencimiento' => $request->fecha_vencimiento,
                 'img_path' => $name,
                 'marca_id' => $request->marca_id,
-                'presentacione_id' => $request->presentacione_id,
+                'cedula'=> $request->cedula,
+                'nombre_del_producto'=> $request->nombre_del_producto,
+                'numero_celular'=> $request->numero_celular,
+                'monto_interes'=> ($request->precio_compra)*0.25
+                
             ]);
             $producto->save();
 
@@ -94,33 +98,17 @@ class ProductoController extends Controller implements HasMiddleware
             DB::rollBack();
         }
 
-        $number = mt_rand(10000000,999999999);
-
-        
-
-        if($this->ProductoCodeExists($number)){
-            $number = mt_rand(10000000,999999999);
-        }
-
-        $request['codigo'] = $number;
-
-       
-
-        Producto::create($request->all());
 
         return redirect()->route('productos.index')->with('success', 'Producto Registrado');
-    }
-
-    public function ProductoCodeExists($number){
-        return Producto::wherecodigo($number)->exists();
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Producto $producto)
     {
-        //
+      $producto = Producto::all();
+      return view('intere.edit', compact('producto'));
     }
 
     /**
@@ -132,15 +120,11 @@ class ProductoController extends Controller implements HasMiddleware
             ->select('marcas.id as id', 'c.nombre as nombre')
             ->where('c.estado', 1)
             ->get();
-        $presentaciones = Presentacione::join('caracteristicas as c', 'presentaciones.caracteristica_id', '=', 'c.id')
-            ->select('presentaciones.id as id', 'c.nombre as nombre')
-            ->where('c.estado', 1)
-            ->get();
         $categorias = Categoria::join('caracteristicas as c', 'categorias.caracteristica_id', '=', 'c.id')
             ->select('categorias.id as id', 'c.nombre as nombre')
             ->where('c.estado', 1)
             ->get();
-        return view('producto.edit', compact('producto', 'marcas', 'presentaciones', 'categorias'));
+        return view('producto.edit', compact('producto', 'marcas', 'categorias'));
     }
 
     /**
@@ -163,11 +147,14 @@ class ProductoController extends Controller implements HasMiddleware
             $producto->fill([
                 'codigo' => $request->codigo,
                 'nombre' => $request->nombre,
+                'nombre_del_producto' => $request->nombre_del_producto,
+                'cedula' => $request->cedula,
+                'numero_celular' => $request->numero_celular,
+                'precio_compra' => $request->precio_compra,
                 'descripcion' => $request->descripcion,
                 'fecha_vencimiento' => $request->fecha_vencimiento,
                 'img_path' => $name,
                 'marca_id' => $request->marca_id,
-                'presentacione_id' => $request->presentacione_id,
             ]);
             $producto->save();
 
@@ -194,14 +181,73 @@ class ProductoController extends Controller implements HasMiddleware
                 ->update([
                     'estado' => 0
                 ]);
-                $message = 'Producto Eliminado';
+                $message = 'Producto a Stock';
         } else {
             Producto::where('id', $producto->id)
                 ->update([
                     'estado' => 1
                 ]);
-                $message='Producto Restaurado';
+                $message='Producto a Empeño';
         }
         return redirect()->route('productos.index')->with('success', $message);
     }
+
+    public function destroya(string $id)
+{
+    Producto::where('id',$id)->delete();
+    return redirect()->route('productos.index')->with('success', 'Producto Eliminado');
+}
+
+    public function update2(UpdateProductoRequest2 $request, Producto $producto)
+    {
+        try {
+
+            $producto->fill([
+                'fecha_vencimiento' => $request->fecha_vencimiento,
+                'monto_interes'
+            ]);
+            $producto->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
+
+        return redirect()->route('interes.index')->with('success', 'Pago Procesados');
+    }
+
+    public function showModal($id)
+    {
+        $producto = Producto::findOrFail($id);
+    
+        $precioCompra = $producto->precio_compra;
+        $fechaVencimiento = Carbon::parse($producto->fecha_vencimiento);
+        $hoy = Carbon::now();
+    
+        $mesesPasados = $fechaVencimiento->diffInMonths($hoy);
+        
+        if ($mesesPasados >= 2) {
+            if ($mesesPasados >= 3) {
+                $montoInteres = $precioCompra * 0.25 * 3;
+                $total = $precioCompra + $montoInteres;
+            } else {
+                $montoInteres = $precioCompra * 0.25 * 2;
+                $total = $precioCompra + $montoInteres;
+            }
+            
+        } else {
+            // Si no han pasado 2 meses, el cálculo es distinto
+            $montoInteres = 0.25 * $precioCompra;
+            $total = $precioCompra + $montoInteres;
+        }
+        session(['producto_total' => $total]);
+
+        return view('intere.modal-body', [
+            'precioCompra' => $precioCompra,
+            'montoInteres' => $montoInteres,
+            'total' => $total,
+            'producto' =>$producto,
+        ]);
+    }
+    
+
 }

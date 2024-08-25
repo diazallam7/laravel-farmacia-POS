@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProveedoreRequest extends FormRequest
+class UpdateProductoRequest2 extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,11 @@ class StoreProveedoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $producto = $this->route('producto');
         return [
-            //
+            'fecha_vencimiento'=> 'required|date',
+            'monto_interes' => 'required'
+
         ];
     }
 }

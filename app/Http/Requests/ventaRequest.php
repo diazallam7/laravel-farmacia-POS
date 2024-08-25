@@ -23,7 +23,6 @@ class ventaRequest extends FormRequest
     {
         return [
             'fecha_hora' => 'required',
-            'impuesto' => 'required',
             'numero_comprobante' => 'required',
             'total' => 'required',
             'cliente_id' => 'required|exists:clientes,id',

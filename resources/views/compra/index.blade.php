@@ -1,6 +1,6 @@
 @extends('template')
 
-@section('title', 'Compras')
+@section('title', 'Ventas')
 
 @push('css')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -32,15 +32,15 @@
     @endif
 
     <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Compras</h1>
+        <h1 class="mt-4 text-center">Ventas</h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item active">Compras</li>
+            <li class="breadcrumb-item active">Ventas</li>
         </ol>
         @can('crear-compra')
         <div class="mb-4">
             <a href="{{ route('compras.create') }}"><button type="button" class="btn btn-primary">Añadir Nueva
-                Compra</button></a>
+                Venta</button></a>
         </div>
         @endcan
         
@@ -48,14 +48,13 @@
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-4"></i>
-                Tabla Compra
+                Tabla Venta
             </div>
             <div class="card-body">
                 <table id="datatablesSimple", class="table table-striped">
                     <thead>
                         <tr>
                             <th>Comprobante:</th>
-                            <th>Proveedor:</th>
                             <th>Fecha y Hora:</th>
                             <th>Total</th>
                             @can('editar-compra','eliminar-compra')
@@ -67,12 +66,8 @@
                         @foreach ($compras as $item)
                             <tr>
                                 <td>
-                                    <p class="fw-semibold mb-1">{{$item->comprobante->tipo_comprobante}}</p>
+                                    <p class="fw-semibold mb-1">{{$item->tipo_comprobante}}</p>
                                     <p class="text-muted mb-0">{{$item->numero_comprobante}}</p>
-                                </td>
-                                <td>
-                                    <p class="fw-semibold mb-1">{{ucfirst($item->proveedore->persona->tipo_persona)}}</p>
-                                    <p class="text-muted mb-0">{{$item->proveedore->persona->razon_social}}</p>
                                 </td>
                                 <td>
                                     {{

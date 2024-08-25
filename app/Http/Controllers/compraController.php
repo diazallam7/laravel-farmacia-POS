@@ -7,10 +7,10 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\StoreCompraRequest;
 use App\Http\Controllers\UserController;
+use App\Models\CierreCaja;
 use App\Models\Compra;
 use App\Models\Comprobante;
 use App\Models\Producto;
-use App\Models\Proveedore;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;  
@@ -35,7 +35,7 @@ class compraController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $compras = Compra::with('comprobante','proveedore.persona')
+        $compras = Compra::with('comprobante')
         ->where('estado',1)
         ->latest()
         ->get();
@@ -47,12 +47,9 @@ class compraController extends Controller implements HasMiddleware
      */
     public function create()
     {
-        $proveedores = Proveedore::whereHas('persona', function ($query) {
-            $query->where('estado', 1);
-        })->get();
         $comprobantes = Comprobante::all();
-        $productos = Producto::where('estado', 1)->get();
-        return view('compra.create', compact('proveedores', 'comprobantes', 'productos'));
+        $productos = Producto::where('estado', 0)->get();
+        return view('compra.create', compact('comprobantes', 'productos'));
     }
 
     /**
@@ -138,4 +135,58 @@ class compraController extends Controller implements HasMiddleware
 
         return redirect()->route('compras.index')->with('success', 'Compra Eliminada');
     }
+    
+    public function cierre_caja(Request $request)
+
+    {
+        $productoTotal = session('producto_total', 0);
+        // Obtener el cierre de caja de los últimos 5 minutos, si existe
+        $cierreHoy = CierreCaja::where('created_at', '>=', Carbon::now()->subMinutes(2))->first();
+    
+        if (!$cierreHoy) {
+            // Si no hay un cierre registrado en los últimos 5 minutos, calcular y crear uno nuevo
+            $totalVentas = DB::table('compras')
+                ->where('created_at', '>=', Carbon::now()->subMinutes(2))
+                ->sum('total');
+    
+            // Sumar el monto_interes a las ventas totales
+            $montoInteres = DB::table('productos')
+                ->where('created_at', '>=', Carbon::now()->subMinutes(2))
+                ->sum('monto_interes');
+
+                $totalVentas += $montoInteres + $productoTotal;
+
+    
+            // Sumar solo las compras realizadas en los últimos 5 minutos
+            $totalCompras = DB::table('productos')
+                ->where('created_at', '>=', Carbon::now()->subMinutes(2))
+                ->sum('precio_compra');
+    
+            $montoExtra = $request->input('monto_extra', 0);
+            
+            $cierreHoy = CierreCaja::create([
+                
+                'total_ventas' => $totalVentas,
+                'total_compras' => $totalCompras,
+                'monto_extra' => $montoExtra,
+            ]);
+            session()->forget('producto_total');
+        } else {
+            // Si ya existe un cierre, actualizar el monto extra ingresado
+            $montoExtra = $request->input('monto_extra', 0);
+            $cierreHoy->monto_extra = $montoExtra;
+            $cierreHoy->save();
+        }
+    
+        $totalComprasConExtra = $cierreHoy->total_compras + $cierreHoy->monto_extra;
+        
+    
+        return view('compra.cierre_caja', [
+            'totalVentas' => $cierreHoy->total_ventas,
+            'totalCompras' => $cierreHoy->total_compras,
+            'montoExtra' => $cierreHoy->monto_extra,
+            'totalComprasConExtra' => $totalComprasConExtra,
+        ]);
+    }
+    
 }

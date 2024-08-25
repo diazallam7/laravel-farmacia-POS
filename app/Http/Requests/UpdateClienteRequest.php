@@ -26,7 +26,9 @@ class UpdateClienteRequest extends FormRequest
             'razon_social' => 'required|max:45',
             'direccion' => 'required|max:80',
             'documento_id' => 'required|integer|exists:documentos,id',
-            'numero_documento' => 'required|max:20|unique:personas,numero_documento,'.$cliente->persona->id
+            'numero_documento' => 'required|max:20|unique:personas,numero_documento,'.$cliente->persona->id,
+            'numero_celular' => 'required',
+            'correo' => 'nullable'
         ];
     }
 }

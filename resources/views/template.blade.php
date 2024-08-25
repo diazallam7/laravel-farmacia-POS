@@ -6,11 +6,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Sistema de Ventas de Farmacos" />
         <meta name="author" content="Allam Diaz" />
-        <title>Farmacia Pito - @yield('title')</title>
+        <title>Express - @yield('title')</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
         <link href="{{ asset('css/template.css')}}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-        <link rel="icon" href="{{ asset('icon3.ico') }}">
+        <link rel="icon" href="{{ asset('express.ico') }}">
         @stack('css')
     </head>
 

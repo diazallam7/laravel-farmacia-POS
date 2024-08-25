@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Producto;
+use App\Models\Persona;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class productoSeeder extends Seeder
+class PersonaSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Producto::create($table->string('articulo_producto'));
+        Persona::create($table->string('numero_documento'));
     }
 }

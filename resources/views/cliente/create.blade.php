@@ -57,6 +57,22 @@
                     @enderror
                     </div>
 
+                    <div class="col-md-12 mb-2">
+                        <label for="numero_celular" class="form-label">Telefono:</label>
+                        <input type="text" name="numero_celular" id="numero_celular" class="form-control" value="{{old('numero_celular')}}">
+                        @error('numero_celular')
+                        <small class="text-danger">{{'*'.$message}}</small>
+                    @enderror
+                    </div>
+
+                    <div class="col-md-12 mb-2">
+                        <label for="correo" class="form-label">Correo:</label>
+                        <input type="text" name="correo" id="correo" class="form-control" value="{{old('correo')}}">
+                        @error('correo')
+                        <small class="text-danger">{{'*'.$message}}</small>
+                    @enderror
+                    </div>
+
                     <div class="col-md-6">
                         <label for="documento_id" class="form-label">Tipo de Documento:</label>
                         <select class="form-select" name="documento_id" id="docuemnto_id">

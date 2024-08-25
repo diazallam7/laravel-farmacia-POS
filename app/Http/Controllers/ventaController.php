@@ -58,7 +58,7 @@ class ventaController extends Controller implements HasMiddleware
             });
         })
         ->select('productos.nombre', 'productos.id', 'productos.stock', 'cpr.precio_venta')
-        ->where('productos.estado', 1)
+        ->where('productos.estado', 0)
         ->where('productos.stock','>',0)
         ->get();
 

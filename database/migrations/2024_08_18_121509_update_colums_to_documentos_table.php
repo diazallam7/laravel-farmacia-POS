@@ -11,11 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('presentaciones', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('caracteristica_id')->unique()->constrained('caracteristicas')->onDelete('cascade');
-            $table->timestamps();
-        });
+        //
     }
 
     /**
@@ -23,6 +19,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('presentaciones');
+        Schema::table('documentos', function (Blueprint $table) {
+            $table->string('numero_documento',20);
+        });
     }
 };

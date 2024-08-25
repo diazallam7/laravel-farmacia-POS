@@ -41,7 +41,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('proveedore_id')
+                                @error('producto_id')
                                     <small class="text-danger">{{ '*' . $message }}</small>
                                 @enderror
                             </div>
@@ -117,11 +117,6 @@
                                             </tr>
                                             <tr>
                                                 <th></th>
-                                                <th colspan="4">IVA %</th>
-                                                <th colspan="2"><span id="iva">0</span></th>
-                                            </tr>
-                                            <tr>
-                                                <th></th>
                                                 <th colspan="4">Total</th>
                                                 <th colspan="2"><input type="hidden" name="total" value="0"
                                                         id="inputTotal"><span id="total">0</span></th>
@@ -146,7 +141,7 @@
                     </div>
                     <div class="p-3 border border-3 border-success">
                         <div class="row">
-                            <!--Proveedor-->
+                            <!--cliente-->
                             <div class="col-md-12 mb-2">
                                 <label for="cliente_id" class="form-label">Cliente:</label>
                                 <select name="cliente_id" id="cliente_id" class="form-control selectpicker show-tick"
@@ -183,15 +178,7 @@
                                     <small class="text-danger">{{ '*' . $message }}</small>
                                 @enderror
                             </div>
-                            <!--Impuesto-->
-                            <div class="col-md-6 mb-2">
-                                <label for="impuesto" class="form-label">Impuesto:</label>
-                                <input readonly type="text" name="impuesto" id="impuesto"
-                                    class="form-control border-success">
-                                @error('impuesto')
-                                    <small class="text-danger">{{ '*' . $message }}</small>
-                                @enderror
-                            </div>
+
                             <!--Fecha-->
                             <div class="col-md-6 mb-2">
                                 <label for="fecha" class="form-label">Fecha:</label>
@@ -258,17 +245,13 @@
 
              desabilitarBotones();
 
-             $('#impuesto').val(impuesto + '%');
 
         });
 
         let cont = 0;
         let subtotal = [];
         let sumas = 0;
-        let iva = 0;
         let total = 0;
-
-        const impuesto = 17;
 
         function mostrarValores() {
             let $dataProducto = document.getElementById('producto_id').value.split('-');
@@ -299,8 +282,7 @@
                         //calculo de los valores
                         subtotal[cont] = round(cantidad * precioVenta - descuento);
                         sumas += subtotal[cont];
-                        iva = round(sumas / 100 * impuesto);
-                        total = round(sumas + iva);
+                        total = round(sumas);
 
                         fila = '<tr id="fila' + cont + '">' +
                             '<th>' + (cont + 1) + '</th>' +
@@ -323,10 +305,7 @@
                         desabilitarBotones();
 
                         $('#sumas').html(sumas);
-                        $('#iva').html(iva);
                         $('#total').html(total);
-
-                        $('#impuesto').val(iva);
                         $('#inputTotal').val(total);
 
                     } else {
@@ -362,13 +341,10 @@
             cont = 0;
             subtotal = [];
             sumas = 0;
-            iva = 0;
             total = 0;
 
             $('#sumas').html(sumas);
-            $('#iva').html(iva);
             $('#total').html(total);
-            $('#impuesto').val(impuesto + '%');
             $('#inputTotal').val(total);
 
             limpiarCampos();
@@ -377,16 +353,13 @@
 
         function eliminarProducto(indice) {
             sumas -= round(subtotal[indice]);
-            iva = round(sumas / 100 * impuesto);
-            total = round(sumas + iva);
+            total = round(sumas);
 
             $('#sumas').html(sumas);
-            $('#iva').html(iva);
             $('#total').html(total);
 
             $('#fila' + indice).remove();
             desabilitarBotones();
-            $('#impuesto').val(iva);
             $('#inputTotal').val(total);
         }
 

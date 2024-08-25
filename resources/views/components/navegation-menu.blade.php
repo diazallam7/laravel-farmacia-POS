@@ -55,10 +55,15 @@
                             </div>--->
                 <div class="sb-sidenav-menu-heading">Modulos</div>
 
+                <a class="nav-link" href="{{ route('interes.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+                    Pagos
+                </a>
+
                 @can('ver-compra')
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-cart-shopping"></i></div>
-                    Compras
+                    Ventas
                     <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                 </a>
                 <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
@@ -72,7 +77,7 @@
                 </div>
                 @endcan
 
-                @can('ver-venta')
+               <!-- @can('ver-venta')
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseVenta" aria-expanded="false" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-dollar-sign"></i></div>
                     Ventas
@@ -85,7 +90,7 @@
                         <a class="nav-link" href="{{route('ventas.create')}}">Crear</a>
                     </nav>
                 </div>
-                @endcan
+                @endcan-->
 
                 @can('ver-categoria')
                 <a class="nav-link" href="{{ route('categorias.index') }}">
@@ -96,17 +101,11 @@
                 
                 @can('ver-marca')
                 <a class="nav-link" href="{{ route('marcas.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-prescription-bottle-medical"></i></i></div>
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-code-branch"></i></div>
                     Marcas
                 </a>
                 @endcan
                
-                @can('ver-presentacione')
-                <a class="nav-link" href="{{ route('presentaciones.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-capsules"></i></i></div>
-                    Presentaciones
-                </a>
-                @endcan
              
                 @can('ver-producto')
                 <a class="nav-link" href="{{ route('productos.index') }}">
@@ -121,13 +120,6 @@
                     Clientes
                 </a>     
                 @endcan
-               
-                @can('ver-proveedore')
-                <a class="nav-link" href="{{ route('proveedores.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-truck-fast"></i></i></i></div>
-                    Proveedores
-                </a> 
-                @endcan
                       
                 
                 <div class="sb-sidenav-menu-heading">OTROS</div>
@@ -138,12 +130,17 @@
                 </a>     
                 @endcan
                  
-                @can('ver-role')
+            
                 <a class="nav-link" href="{{ route('roles.index') }}">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-shield-halved"></i></i></div>
                     Roles
                 </a> 
-                @endcan
+
+                <a class="nav-link" href="{{ route('compras.cierre_caja') }}">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-copyright"></i></div>
+                    Cierre de Caja del dia
+                </a>
+
                      
             </div>
         </div>

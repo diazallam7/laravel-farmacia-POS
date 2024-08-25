@@ -21,7 +21,7 @@ return new class extends Migration
         });
 
         Schema::table('personas', function (Blueprint $table) {
-            $table->string('numero_documento', 20)->after('documento_id');
+            $table->string('numero_documento',20)->after('documento_id');
         });
     }
 
@@ -35,12 +35,13 @@ return new class extends Migration
             $table->dropColumn('documento_id');
         });
 
+
         Schema::table('personas', function (Blueprint $table) {
-            $table->foreignId('documento_id')->after('estado')->unique()->constrained('documentos')->onDelete('cascade');
+            $table->foreignId('documento_id')->after('estado')->constrained('documentos')->onDelete('cascade');
         });
-        
+
         Schema::table('personas', function (Blueprint $table) {
-            $table->dropColumn('numero_documento',20);
+            $table->dropColumn('numero_documento');
         });
     }
 };
