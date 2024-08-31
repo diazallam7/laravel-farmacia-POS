@@ -24,19 +24,23 @@ class UpdateProductoRequest extends FormRequest
         $producto = $this->route('producto');
         return [
             'codigo'=> 'required|unique:productos,codigo,'.$producto->id.'|max:45',
-            'nombre'=> 'required|unique:productos,nombre,'.$producto->id.'|max:45',
+            'nombre'=> 'required',
+            'precio_compra' => 'required',
             'descripcion'=> 'nullable|max:255',
             'fecha_vencimiento'=> 'nullable|date',
             'image_path'=> 'nullable|image|mimes:png,jpg,jpeg,|max:2048',
             'marca_id'=> 'required|integer|exists:marcas,id',
-            'presentacione_id'=> 'required|integer|exists:presentaciones,id',
-            'categorias'=> 'required'
+            'categorias'=> 'required',
+            'numero_celular' => 'nullable',
+            'cedula'=> 'nullable',
+            'nombre_del_producto' => 'required',
+            'monto_interes' => 'nullable'
+
         ];
     }
     public function attributes(){
         return[
             'marca_id'=> 'marca',
-            'presentacione_id'=> 'presentacion'
         ];
     }
     public function messages(){
@@ -44,7 +48,6 @@ class UpdateProductoRequest extends FormRequest
             'codigo.required'=> 'Se necesita un campo codigo',
             'nombre.required'=> 'Se necesita un nombre',
             'marca_id.required'=> 'Se necesita una marca',
-            'presentacione_id.required'=> 'Se necesita una presentacion',
             'categorias.required'=> 'Se necesita al menos una categoria'
         ];
     }

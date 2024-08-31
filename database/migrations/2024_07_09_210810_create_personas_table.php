@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('tipo_persona',45);
             $table->tinyInteger('estado')->default(1);
             $table->foreignId('documento_id')->unique()->constrained('documentos')->onDelete('cascade');
+            $table->string('numero_celular',20)->nullable();
             $table->timestamps();
         });
     }

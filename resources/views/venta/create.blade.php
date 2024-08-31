@@ -11,233 +11,63 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Realizar Venta</h1>
+        <h1 class="mt-4 text-center">Realizar Compra</h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('ventas.index') }}">Ventas</a></li>
-            <li class="breadcrumb-item active">Realizar Venta</li>
+            <li class="breadcrumb-item"><a href="{{ route('ventas.index') }}">Compras</a></li>
+            <li class="breadcrumb-item active">Realizar Compra</li>
         </ol>
     </div>
 
-    <form action="{{ route('ventas.store') }}" method="post">
-        @csrf
-        <div class="container mt-4">
-            <div class="row gy-4">
+        <div class="contriner w-100 border border-3 border-primary rounded p-4 mt-3">
+            <form action="{{ route('ventas.store') }}" method="post">
+                @csrf
+                <div class="row g-3">
 
-                <!--Venta Producto -->
-                <div class="col-md-8">
-                    <div class="text-white bg-primary p-1 text-center">
-                        Detalles de la Venta
+                    <div class="col-md-6 mb-2">
+                        <label for="codigo" class="form-label">Codigo:</label>
+                        <input type="text" name="codigo" id="codigo" class="form-control"
+                            value="{{ old('codigo', 'C') }}">
+                        @error('codigo')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
                     </div>
-                    <!--Producto-->
-                    <div class="p-3 border border-3 border-primary">
-                        <div class="row">
-                            <div class="col-md-12 mb-2">
-                                <select name="producto_id" id="producto_id" class="form-control selectpicker"
-                                    data-live-search="true" data-size="1" title="Buscar Producto">
-                                    @foreach ($productos as $item)
-                                        <option value="{{ $item->id }}-{{ $item->stock }}-{{ $item->precio_venta }}">
-                                            {{ $item->codigo . ' ' . $item->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('proveedore_id')
-                                    <small class="text-danger">{{ '*' . $message }}</small>
-                                @enderror
-                            </div>
+                    
 
-                            <div class="d-flex justify-content-end mb-4">
-                                <div class="col-md-6 mb-2">
-                                    <div class="row">
-                                        <label for="stock" class="form-label col-sm-4">En Stock:</label>
-                                        <div class="col-sm-8">
-                                            <input disabled id="stock" type="text" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="col-md-6 mb-2">
+                        <label for="nombre_producto" class="form-label">Nombre del Producto:</label>
+                        <input type="text" name="nombre_producto" id="nombre_producto" class="form-control"
+                        value="{{ old('nombre_producto') }}">
+                        @error('nombre_producto')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
 
-                            <!--Cantidad-->
+                    <div class="col-md-6 mb-2">
+                        <label for="fecha_hora" class="form-label">Fecha:</label>
+                        <input type="date" name="fecha_hora" id="fecha_hora" class="form-control"
+                            value="{{ old('fecha_hora') }}">
+                        @error('fecha_hora')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
 
-                            <div class="col-md-4 mb-2">
-                                <label for="cantidad" class="form-control">Cantidad:</label>
-                                <input type="number" name="cantidad" id="cantidad" class="form-control">
-                            </div>
-
-                            <!--Precio de Venta-->
-
-                            <div class="col-md-4 mb-2">
-                                <label for="precio_venta" class="form-control">Precio de Venta:</label>
-                                <input disabled type="number" name="precio_venta" id="precio_venta" class="form-control"
-                                    step="0.1">
-                            </div>
-
-                            <!--Descuento-->
-
-                            <div class="col-md-4 mb-2">
-                                <label for="descuento" class="form-control">Descuento:</label>
-                                <input type="number" name="descuento" id="descuento" class="form-control">
-                            </div>
-
-                            <div class="col-md-12 mb-2 mt-2 text-center">
-                                <button id="btn_agregar" class="btn btn-primary" type="button">Agregar</button>
-                            </div>
-
-                            <!--Tabla detalle venta-->
-                            <div class="col-md-12">
-                                <div class="table-responsive">
-                                    <table id="tabla_detalle" class="table table-hover">
-                                        <thead class="bg-primary text-white">
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Producto</th>
-                                                <th>Cantidad</th>
-                                                <th>Precio Venta</th>
-                                                <th>Descuento</th>
-                                                <th>Subtotal</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                            </tr>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th></th>
-                                                <th colspan="4">Sumas</th>
-                                                <th colspan="2"><span id="sumas">0</span></th>
-                                            </tr>
-                                            <tr>
-                                                <th></th>
-                                                <th colspan="4">IVA %</th>
-                                                <th colspan="2"><span id="iva">0</span></th>
-                                            </tr>
-                                            <tr>
-                                                <th></th>
-                                                <th colspan="4">Total</th>
-                                                <th colspan="2"><input type="hidden" name="total" value="0"
-                                                        id="inputTotal"><span id="total">0</span></th>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mb-2">
-                                <button id="cancelar" type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal">
-                                    Cancelar Venta
-                                </button>
-                            </div>
-                        </div>
+                    <div class="col-md-6 mb-2">
+                        <label for="precio_compra" class="form-label">Precio de la Compra:</label>
+                        <input type="text" name="precio_compra" id="precio_compra" class="form-control"
+                            value="{{ old('precio_compra') }}">
+                        @error('precio_compra')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+                    
+                    <div class="col-md-12 text-center">
+                        <button type="sumbit" class="btn btn-primary">Guardar</button>
                     </div>
                 </div>
-                <!--Venta-->
-                <div class="col-md-4">
-                    <div class="text-white bg-success p-1 text-center">
-                        Datos Generales
-                    </div>
-                    <div class="p-3 border border-3 border-success">
-                        <div class="row">
-                            <!--Proveedor-->
-                            <div class="col-md-12 mb-2">
-                                <label for="cliente_id" class="form-label">Cliente:</label>
-                                <select name="cliente_id" id="cliente_id" class="form-control selectpicker show-tick"
-                                    data-live-search="true" title="Selecciona" data-size="2">
-                                    @foreach ($clientes as $item)
-                                        <option value="{{ $item->id }}">{{ $item->persona->razon_social }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('cliente_id')
-                                    <small class="text-danger"></small>
-                                @enderror
-                            </div>
-                            <!--Tipo Comprobante-->
-                            <div class="col-md-12 mb-2">
-                                <label for="comprobante_id" class="form-label">Comprobante:</label>
-                                <select name="comprobante_id" id="comprobante_id"
-                                    class="form-control selectpicker show-tick" title="Selecciona">
-                                    @foreach ($comprobantes as $item)
-                                        <option value="{{ $item->id }}">{{ $item->tipo_comprobante }}</option>
-                                    @endforeach
-                                </select>
-                                @error('comprobante_id')
-                                    <small class="text-danger">{{ '*' . $message }}</small>
-                                @enderror
-                            </div>
-                            <!--Tipo Comprobante-->
-                            <div class="col-md-12 mb-2">
-                                <label for="numero_comprobante" class="form-label">Ingrese el Nro de
-                                    Comprobante:</label>
-                                <input required type="text" name="numero_comprobante" id="numero_comprobante"
-                                    class="form-control">
-                                @error('tipo_comprobante')
-                                    <small class="text-danger">{{ '*' . $message }}</small>
-                                @enderror
-                            </div>
-                            <!--Impuesto-->
-                            <div class="col-md-6 mb-2">
-                                <label for="impuesto" class="form-label">Impuesto:</label>
-                                <input readonly type="text" name="impuesto" id="impuesto"
-                                    class="form-control border-success">
-                                @error('impuesto')
-                                    <small class="text-danger">{{ '*' . $message }}</small>
-                                @enderror
-                            </div>
-                            <!--Fecha-->
-                            <div class="col-md-6 mb-2">
-                                <label for="fecha" class="form-label">Fecha:</label>
-                                <input readonly type="date" name="fecha" id="fecha"
-                                    class="form-control border-success" value="<?php echo date('Y-m-d'); ?>">
-
-                                <?php
-                                use Carbon\Carbon;
-                                
-                                $fecha_hora = Carbon::now()->toDateTimeString();
-                                ?>
-
-                                <input type="hidden" name="fecha_hora" value="{{ $fecha_hora }}">
-                            </div>
-                            <input type="hidden" name="user_id" value="{{auth()->user()->id}}">
-                            <!--Guardar-->
-                            <div class="col-md-12 mb-2 text-center">
-                                <button id="guardar" type="submit" class="btn btn-success">Guardar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            </form>
         </div>
-        <!-- Modal cancelar compra -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal de Confirmacion</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Seguros que quieres cancelar la venta?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button id="btnCancelarVenta" type="button" class="btn btn-primary"
-                            data-bs-dismiss="modal">Confirmar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
+
 @endsection
 
 @push('js')
@@ -258,17 +88,13 @@
 
              desabilitarBotones();
 
-             $('#impuesto').val(impuesto + '%');
 
         });
 
         let cont = 0;
         let subtotal = [];
         let sumas = 0;
-        let iva = 0;
         let total = 0;
-
-        const impuesto = 17;
 
         function mostrarValores() {
             let $dataProducto = document.getElementById('producto_id').value.split('-');
@@ -299,8 +125,7 @@
                         //calculo de los valores
                         subtotal[cont] = round(cantidad * precioVenta - descuento);
                         sumas += subtotal[cont];
-                        iva = round(sumas / 100 * impuesto);
-                        total = round(sumas + iva);
+                        total = round(sumas);
 
                         fila = '<tr id="fila' + cont + '">' +
                             '<th>' + (cont + 1) + '</th>' +
@@ -323,10 +148,7 @@
                         desabilitarBotones();
 
                         $('#sumas').html(sumas);
-                        $('#iva').html(iva);
                         $('#total').html(total);
-
-                        $('#impuesto').val(iva);
                         $('#inputTotal').val(total);
 
                     } else {
@@ -362,13 +184,10 @@
             cont = 0;
             subtotal = [];
             sumas = 0;
-            iva = 0;
             total = 0;
 
             $('#sumas').html(sumas);
-            $('#iva').html(iva);
             $('#total').html(total);
-            $('#impuesto').val(impuesto + '%');
             $('#inputTotal').val(total);
 
             limpiarCampos();
@@ -377,16 +196,13 @@
 
         function eliminarProducto(indice) {
             sumas -= round(subtotal[indice]);
-            iva = round(sumas / 100 * impuesto);
-            total = round(sumas + iva);
+            total = round(sumas);
 
             $('#sumas').html(sumas);
-            $('#iva').html(iva);
             $('#total').html(total);
 
             $('#fila' + indice).remove();
             desabilitarBotones();
-            $('#impuesto').val(iva);
             $('#inputTotal').val(total);
         }
 

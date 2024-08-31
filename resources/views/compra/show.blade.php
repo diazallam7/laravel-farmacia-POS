@@ -8,11 +8,11 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Ver Compras</h1>
+        <h1 class="mt-4 text-center">Ver Ventas</h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('compras.index') }}">Compras</a></li>
-            <li class="breadcrumb-item active">Ver Compras</li>
+            <li class="breadcrumb-item"><a href="{{ route('compras.index') }}">Ventas</a></li>
+            <li class="breadcrumb-item active">Ver Ventas</li>
         </ol>
     </div>
 
@@ -47,20 +47,6 @@
                 </div>
             </div>
 
-            <!--Proveedor-->
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text"><i class="fa-solid fa-user_tie"></i></span>
-                        <input disabled type="text" class="form-control" value="Proveedor: ">
-                    </div>
-                </div>
-                <div class="col-sm-8">
-                    <input disabled type="text" class="form-control"
-                        value="{{ $compra->proveedore->persona->razon_social }}">
-                </div>
-            </div>
-
             <!--Fecha-->
             <div class="row mb-2">
                 <div class="col-sm-4">
@@ -89,24 +75,12 @@
                 </div>
             </div>
 
-            <!--Impuesto-->
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text"><i class="fa-solid fa-percent"></i></span>
-                        <input disabled type="text" class="form-control" value="Impuesto: ">
-                    </div>
-                </div>
-                <div class="col-sm-8">
-                    <input id="input-impuesto" disabled type="text" class="form-control" value="{{ $compra->impuesto }}">
-                </div>
-            </div>
 
         <!--Tabla producto-->
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Tabla de detalles de la compra
+                Tabla de detalles de la venta
             </div>
             <div class="card-body table-responsive">
                 <table class="table table-striped">
@@ -120,27 +94,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($compra->productos as $item)
+                        @foreach ($items as $item)
                             <tr>
-                                <td>{{ $item->nombre }}</td>
+                                <td>
+                                    @foreach ($items as $item)
+                                        @if(isset($item->nombre_del_producto))
+                                            <!-- Mostrar nombre de productos -->
+                                            <p class="fw-semibold mb-1">{{ $item->nombre_del_producto }}</p>
+                                        @elseif(isset($item->nombre_producto))
+                                            <!-- Mostrar nombre de productos desde ventas -->
+                                            <p class="fw-semibold mb-1">{{ $item->nombre_producto }}</p>
+                                        @endif
+                                    @endforeach
+                                </td>
+                                
                                 <td>{{ $item->pivot->cantidad }}</td>
-                                <td>{{ $item->pivot->precio_compra }}</td>
-                                <td>{{ $item->pivot->precio_venta }}</td>
-                                <td class="sub-total">{{ $item->pivot->cantidad * $item->pivot->precio_compra }}</td>
+                                    <td>{{ $item->pivot->precio_venta }}</td>
+                                    <td>{{ $item->pivot->precio_compra }}</td>
+                                <td class="sub-total">{{ $item->pivot->cantidad * $item->pivot->precio_venta }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="5"></th>
-                        </tr>
-                        <tr>
                             <th colspan="4">Sumas:</th>
                             <th id="th-sumas"></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Iva:</th>
-                            <th id="th-iva"></th>
                         </tr>
                         <tr>
                             <th colspan="4">Total:</th>
@@ -148,6 +126,7 @@
                         </tr>
                     </tfoot>
                 </table>
+                
             </div>
         </div>
 
@@ -160,7 +139,6 @@
         //variables
         let filasSubtotal = document.getElementsByClassName('sub-total');
         let cont = 0;
-        let impuesto = $('#input-impuesto').val();
 
         $(document).ready(function() {
             calcularValores();
@@ -171,8 +149,6 @@
                 cont += parseFloat(filasSubtotal[i].innerHTML);
             }
             $('#th-sumas').html(cont);
-            $('#th-iva').html(impuesto);
-            $('#th-total').html(cont + parseFloat(impuesto));
         }
     </script>
 @endpush

@@ -1,6 +1,6 @@
 @extends('template')
 
-@section('title', 'Compras')
+@section('title', 'Ventas')
 
 @push('css')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -32,70 +32,79 @@
     @endif
 
     <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Compras</h1>
+        <h1 class="mt-4 text-center">Ventas</h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item active">Compras</li>
+            <li class="breadcrumb-item active">Ventas</li>
         </ol>
         @can('crear-compra')
-        <div class="mb-4">
-            <a href="{{ route('compras.create') }}"><button type="button" class="btn btn-primary">Añadir Nueva
-                Compra</button></a>
-        </div>
+            <div class="mb-4">
+                <a href="{{ route('compras.create') }}"><button type="button" class="btn btn-primary">Añadir Nueva
+                        Venta</button></a>
+            </div>
         @endcan
-        
+
 
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-4"></i>
-                Tabla Compra
+                Tabla Ventas
             </div>
             <div class="card-body">
                 <table id="datatablesSimple", class="table table-striped">
                     <thead>
                         <tr>
                             <th>Comprobante:</th>
-                            <th>Proveedor:</th>
+                            <th>Nombre del Producto</th>
                             <th>Fecha y Hora:</th>
                             <th>Total</th>
-                            @can('editar-compra','eliminar-compra')
                             <th>Acciones</th>
-                            @endcan
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($compras as $item)
                             <tr>
                                 <td>
-                                    <p class="fw-semibold mb-1">{{$item->comprobante->tipo_comprobante}}</p>
-                                    <p class="text-muted mb-0">{{$item->numero_comprobante}}</p>
+                                    <p class="fw-semibold mb-1">{{ $item->tipo_comprobante }}</p>
+                                    <p class="text-muted mb-0">{{ $item->numero_comprobante }}</p>
                                 </td>
                                 <td>
-                                    <p class="fw-semibold mb-1">{{ucfirst($item->proveedore->persona->tipo_persona)}}</p>
-                                    <p class="text-muted mb-0">{{$item->proveedore->persona->razon_social}}</p>
+                                    @if ($item->productos->isNotEmpty())
+                                        <!-- Mostrar los nombres de los productos relacionados -->
+                                        @foreach ($item->productos as $producto)
+                                            <p >{{ $producto->nombre_del_producto }}</p>
+                                        @endforeach
+                                    @elseif ($item->ventas->isNotEmpty())
+                                        <!-- Mostrar los nombres de los productos relacionados a las ventas -->
+                                        @foreach ($item->ventas as $venta)
+                                            @php
+                                                $producto = \App\Models\Venta::find($venta->nombre_producto); // Suponiendo que el modelo Venta tiene un campo producto_id
+                                            @endphp
+                                            <p >{{ $venta->nombre_producto }}</p>
+                                        @endforeach
+                                    @endif
                                 </td>
                                 <td>
-                                    {{
-                                    \Carbon\Carbon::parse($item->fecha_hora)->format('d-m-Y') .'    '.
-                                    \Carbon\Carbon::parse($item->fecha_hora)->format('H:i')
-                                    }}
+                                    {{ \Carbon\Carbon::parse($item->fecha_hora)->format('d-m-Y') .
+                                        ' ' .
+                                        \Carbon\Carbon::parse($item->fecha_hora)->format('H:i') }}
                                 </td>
                                 <td>
-                                    {{$item->total}}
+                                    {{ $item->total }}
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
 
                                         @can('mostrar-compra')
-                                        <form action="{{route('compras.show', ['compra'=>$item])}}">
-                                            <button type="submit" class="btn btn-success">Ver</button>
+                                            <form action="{{ route('compras.show', ['compra' => $item]) }}">
+                                                <button type="submit" class="btn btn-success">Ver</button>
                                             </form>
                                         @endcan
-                                            @can('eliminar-compra')
+                                        @can('eliminar-compra')
                                             <button type="button" class="btn btn-secondary" right; data-bs-toggle="modal"
-                                            data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
-                                            @endcan
-                                      </div>
+                                                data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
+                                        @endcan
+                                    </div>
                                 </td>
                             </tr>
 
@@ -125,7 +134,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         @endforeach
                     </tbody>
                 </table>

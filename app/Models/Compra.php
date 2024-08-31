@@ -9,17 +9,24 @@ class Compra extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['fecha_hora', 'impuesto', 'numero_comprobante','total', 'comprobante_id', 'proveedore_id'];
-
-    public function proveedore(){
-        return $this->belongsTo(Proveedore::class);
-    }
+    protected $fillable = ['fecha_hora','numero_comprobante','total', 'comprobante_id'];
 
     public function comprobante(){
         return $this->belongsTo(Comprobante::class);
     }
 
-    public function productos(){
-        return $this->belongsToMany(Producto::class)->withTimestamps()->withPivot('cantidad','precio_compra','precio_venta');
+    public function productos()
+    {
+        return $this->belongsToMany(Producto::class, 'compra_producto', 'compra_id', 'producto_id')
+                    ->withTimestamps()
+                    ->withPivot('cantidad', 'precio_compra', 'precio_venta');
     }
+    
+    public function ventas()
+    {
+        return $this->belongsToMany(Venta::class, 'compra_venta', 'compra_id', 'venta_id')
+                    ->withTimestamps()
+                    ->withPivot('cantidad', 'precio_compra', 'precio_venta');
+    }
+    
 }

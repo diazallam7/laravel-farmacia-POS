@@ -26,17 +26,8 @@
                 @csrf
                 <div class="row g-3">
 
-                    <div class="col-md-6 mb-2">
-                        <label for="codigo" class="form-label">Codigo:</label>
-                        <input type="text" name="codigo" id="codigo" class="form-control"
-                            value="{{ old('codigo') }}">
-                        @error('codigo')
-                            <small class="text-danger">{{ '*' . $message }}</small>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6 mb-2">
-                        <label for="nombre" class="form-label">Nombre:</label>
+                    <div class="col-md-4 mb-2">
+                        <label for="nombre" class="form-label">Nombre y Apellido:</label>
                         <input type="text" name="nombre" id="nombre" class="form-control"
                             value="{{ old('nombre') }}">
                         @error('nombre')
@@ -44,28 +35,65 @@
                         @enderror
                     </div>
 
-                    <div class="col-md-12 mb-2">
-                        <label for="descripcion" class="form-label">Descripcion:</label>
-                        <textarea name="descripcion" id="descripcion" rows="3" class="form-control">{{ old('descripcion') }}</textarea>
+                    <div class="col-md-4 mb-2">
+                        <label for="descripcion" class="form-label">Direccion:</label>
+                        <input type="text" name="descripcion" id="descripcion" class="form-control"
+                        value="{{ old('descripcion') }}">
                         @error('descripcion')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
 
-                    <div class="col-md-6 mb-2">
-                        <label for="fecha_vencimiento" class="form-label">Fecha de Vencimiento:</label>
-                        <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" class="form-control"
-                            value="{{ old('fecha_vencimiento') }}">
-                        @error('fecha_vencimiento')
+                    <div class="col-md-4 mb-2">
+                        <label for="cedula" class="form-label">Cedula:</label>
+                        <input type="text" name="cedula" id="cedula" class="form-control"
+                            value="{{ old('cedula') }}">
+                        @error('cedula')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-2">
+                        <label for="numero_celular" class="form-label">Telefono:</label>
+                        <input type="text" name="numero_celular" id="numero_celular" class="form-control"
+                            value="{{ old('numero_celular') }}">
+                        @error('numero_celular')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-2">
+                        <label for="codigo" class="form-label">Nro de Boleta:</label>
+                        <input type="text" name="codigo" id="codigo" class="form-control"
+                            value="{{ old('codigo') }}">
+                        @error('codigo')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-2">
+                        <label for="nombre_del_producto" class="form-label">Nombre del Producto:</label>
+                        <input type="text" name="nombre_del_producto" id="nombre_del_producto" class="form-control"
+                            value="{{ old('nombre_del_producto') }}">
+                        @error('nombre_del_producto')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
 
                     <div class="col-md-6 mb-2">
-                        <label for="img_path" class="form-label">Imagen:</label>
-                        <input type="file" name="img_path" id="img_path" class="form-control" accept="image/*"
-                            value="{{ old('img_path') }}">
-                        @error('img_path')
+                        <label for="precio_compra" class="form-label">Total:</label>
+                        <input type="text" name="precio_compra" id="precio_compra" class="form-control"
+                            value="{{ old('precio_compra') }}">
+                        @error('precio_compra')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+                        <label for="fecha_vencimiento" class="form-label">Fecha de Entrega:</label>
+                        <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" class="form-control"
+                            value="{{ old('fecha_vencimiento') }}">
+                        @error('fecha_vencimiento')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
@@ -79,19 +107,6 @@
                             @endforeach
                         </select>
                         @error('marca_id')
-                            <small class="text-danger">{{ '*' . $message }}</small>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6 mb-2">
-                        <label for="presentacione_id" class="form-label">Presentaciones:</label>
-                        <select data-size="4" title="Seleccione una presentacion" data-live-search="true"
-                            name="presentacione_id" id="presentacione_id" class="form-control selectpicker show-tick">
-                            @foreach ($presentaciones as $item)
-                                <option value="{{ $item->id }}" {{old('presentacione_id') == $item->id ? 'selected' : ''}}>{{ $item->nombre }}</option>
-                            @endforeach
-                        </select>
-                        @error('presentacione_id')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
@@ -121,4 +136,30 @@
 
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+
+
+
+    <script>
+document.getElementById('cedula').addEventListener('change', function() {
+    var cedula = this.value;
+
+    if (cedula) {
+        fetch('/buscar-persona?cedula=' + cedula)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    document.getElementById('nombre').value = data.nombre || '';
+                    document.getElementById('descripcion').value = data.descripcion || '';
+                    document.getElementById('numero_celular').value = data.numero_celular || '';
+                } else {
+                    alert('No se encontró ninguna persona con esa cédula.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+});
+
+
+
+    </script>
 @endpush

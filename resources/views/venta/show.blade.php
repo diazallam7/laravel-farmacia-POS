@@ -105,19 +105,6 @@
                 </div>
             </div>
 
-            <!--Impuesto-->
-            <div class="row mb-2">
-                <div class="col-sm-4">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text"><i class="fa-solid fa-percent"></i></span>
-                        <input disabled type="text" class="form-control" value="Impuesto: ">
-                    </div>
-                </div>
-                <div class="col-sm-8">
-                    <input id="input-impuesto" disabled type="text" class="form-control" value="{{ $venta->impuesto }}">
-                </div>
-            </div>
-
         <!--Tabla producto-->
         <div class="card mb-4">
             <div class="card-header">
@@ -155,10 +142,6 @@
                             <th id="th-sumas"></th>
                         </tr>
                         <tr>
-                            <th colspan="4">Iva:</th>
-                            <th id="th-iva"></th>
-                        </tr>
-                        <tr>
                             <th colspan="4">Total:</th>
                             <th id="th-total"></th>
                         </tr>
@@ -176,7 +159,6 @@
         //variables
         let filasSubtotal = document.getElementsByClassName('sub-total');
         let cont = 0;
-        let impuesto = $('#input-impuesto').val();
 
         $(document).ready(function() {
             calcularValores();
@@ -187,8 +169,6 @@
                 cont += parseFloat(filasSubtotal[i].innerHTML);
             }
             $('#th-sumas').html(cont);
-            $('#th-iva').html(impuesto);
-            $('#th-total').html(cont + parseFloat(impuesto));
         }
     </script>
 @endpush

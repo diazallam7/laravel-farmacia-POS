@@ -56,6 +56,8 @@
                         <th>Nombre:</th>
                         <th>Direccion</th>
                         <th>Documento</th>
+                        <th>Telefono</th>
+                        <th>Correo</th>
                         <th>Tipo de Cliente</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -73,6 +75,12 @@
                             <td>
                                 <p class="fw-normal mb-1"> {{ $item->persona->documento->tipo_documento }}</p>
                                 <p class="text-muted mb-0"> {{ $item->persona->numero_documento }}</p>
+                            </td>
+                            <td>
+                                {{$item->persona->numero_celular}}
+                            </td>
+                            <td>
+                                {{ $item->persona->correo }}
                             </td>
                             <td>
                                 {{ $item->persona->tipo_persona }}

@@ -11,11 +11,11 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Crear Compras</h1>
+        <h1 class="mt-4 text-center">Crear Venta</h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('compras.index') }}">Compras</a></li>
-            <li class="breadcrumb-item active">Crear Compra</li>
+            <li class="breadcrumb-item"><a href="{{ route('compras.index') }}">Ventas</a></li>
+            <li class="breadcrumb-item active">Crear Venta</li>
         </ol>
     </div>
     <form action="{{route('compras.store')}}" method="post">
@@ -26,20 +26,32 @@
                 <!--Compra Producto -->
                 <div class="col-md-8">
                     <div class="text-white bg-primary p-1 text-center">
-                        Detalles de la Compra
+                        Detalles de la Venta
                     </div>
                     <!--Producto-->
                     <div class="p-3 border border-3 border-primary">
                         <div class="row">
-                            <div class="col-md-12 mb-2">
+                            <div class="col-md-6 mb-2">
                                 <select name="producto_id" id="producto_id" class="form-control selectpicker"
-                                    data-live-search="true" data-size="1" title="Buscar Producto">
+                                    data-live-search="true" data-size="2" title="Buscar en Productos" onchange="mostrarValores()">
                                     @foreach ($productos as $item)
-                                        <option value="{{ $item->id }}">{{ $item->codigo.' '.$item->nombre }}
+                                        <option value="{{ $item->id }}" data-precio="{{$item->precio_compra}}">{{ $item->codigo.' '.$item->nombre_del_producto }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('proveedore_id')
+                                @error('producto_id')
+                                    <small class="text-danger">{{'*'.$message}}</small>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <select name="venta_id" id="venta_id" class="form-control selectpicker"
+                                data-live-search="true" data-size="2" title="Buscar en Compras" onchange="mostrarValoresVenta()">
+                                @foreach ($venta as $item)
+                                    <option value="{{ $item->id }}" data-precio="{{$item->precio_compra}}">{{ $item->codigo.' '.$item->nombre_producto }}
+                                    </option>
+                                @endforeach
+                            </select>
+                                @error('venta_id')
                                     <small class="text-danger">{{'*'.$message}}</small>
                                 @enderror
                             </div>
@@ -55,8 +67,8 @@
 
                             <div class="col-md-4 mb-2">
                                 <label for="precio_compra" class="form-control">Precio de Compra:</label>
-                                <input type="number" name="precio_compra" id="precio_compra" class="form-control"
-                                    step="0.1">
+                                <input disabled type="number" name="precio_compra" id="precio_compra" class="form-control"
+                                    step="0.1" value="" readonly>
                             </div>
 
                             <!--Precio de Venta-->
@@ -103,11 +115,6 @@
                                             </tr>
                                             <tr>
                                                 <th></th>
-                                                <th colspan="4">IVA %</th>
-                                                <th colspan="2"><span id="iva">0</span></th>
-                                            </tr>
-                                            <tr>
-                                                <th></th>
                                                 <th colspan="4">Total</th>
                                                 <th colspan="2"><input type="hidden" name="total" value="0" id="inputTotal"><span id="total">0</span></th>
                                             </tr>
@@ -131,23 +138,13 @@
                     </div>
                     <div class="p-3 border border-3 border-success">
                         <div class="row">
-                            <!--Proveedor-->
-                            <div class="col-md-12 mb-2">
-                                <label for="proveedore_id" class="form-label">Proveedor:</label>
-                                <select name="proveedore_id" id="proveedore_id" class="form-control selectpicker show-tick"
-                                    data-live-search="true" title="Selecciona" data-size="2">
-                                    @foreach ($proveedores as $item)
-                                        <option value="{{ $item->id }}">{{ $item->persona->razon_social }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
                             <!--Tipo Comprobante-->
                             <div class="col-md-12 mb-2">
                                 <label for="comprobante_id" class="form-label">Comprobante:</label>
                                 <select name="comprobante_id" id="comprobante_id"
                                     class="form-control selectpicker show-tick" title="Selecciona">
                                     @foreach ($comprobantes as $item)
+                                    
                                         <option value="{{ $item->id }}">{{ $item->tipo_comprobante }}</option>
                                     @endforeach
                                 </select>
@@ -161,21 +158,12 @@
                                     Comprobante:</label>
                                 <input required type="text" name="numero_comprobante" id="numero_comprobante"
                                     class="form-control">
-                                @error('tipo_comprobante')
-                                    <small class="text-danger">{{'*'.$message}}</small>
-                                @enderror
-                            </div>
-                            <!--Impuesto-->
-                            <div class="col-md-6 mb-2">
-                                <label for="impuesto" class="form-label">Impuesto:</label>
-                                <input readonly type="text" name="impuesto" id="impuesto"
-                                    class="form-control border-success">
-                                @error('impuesto')
+                                @error('numero_comprobante')
                                     <small class="text-danger">{{'*'.$message}}</small>
                                 @enderror
                             </div>
                             <!--Fecha-->
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-12 mb-2">
                                 <label for="fecha" class="form-label">Fecha:</label>
                                 <input readonly type="date" name="fecha" id="fecha"
                                     class="form-control border-success" value="<?php echo date('Y-m-d'); ?>">
@@ -227,6 +215,13 @@
     <script>
         $(document).ready(function() {
             $('#btn_agregar').click(function() {
+                console.log({
+        producto_id: $('#producto_id').val(),
+        venta_id: $('#venta_id').val(),
+        cantidad: $('#cantidad').val(),
+        precio_compra: $('#precio_compra').val(),
+        precio_venta: $('#precio_venta').val(),
+    });
                 agregarProducto();
             });
 
@@ -236,17 +231,12 @@
 
             desabilitarBotones();
 
-            $('#impuesto').val(impuesto + '%');
-
         });
 
         let cont = 0;
         let subtotal = [];
         let sumas = 0;
-        let iva = 0;
         let total = 0;
-
-        const impuesto = 17;
 
         //Valores de los campos
 
@@ -266,13 +256,10 @@
             cont = 0;
             subtotal = [];
             sumas = 0;
-            iva = 0;
             total = 0;
 
             $('#sumas').html(sumas);
-            $('#iva').html(iva);
             $('#total').html(total);
-            $('#impuesto').val(impuesto + '%');
             $('#inputTotal').val(total);
 
             limpiarCampos();
@@ -289,35 +276,57 @@
             }
         }
 
-        function agregarProducto() {
-            idProducto = $('#producto_id').val();
-            nameProducto = ($('#producto_id option:selected').text()).split(' ')[1];
-            cantidad = $('#cantidad').val();
-            precioCompra = $('#precio_compra').val();
-            precioVenta = $('#precio_venta').val();
+        function mostrarValores() {
+    let precio = $('#producto_id').find(':selected').data('precio');
+    $('#precio_compra').val(precio);
+}
 
-            if (nameProducto != '' && cantidad != '' && precioCompra != '' && precioVenta != '') {
+function mostrarValoresVenta() {
+    let precio = $('#venta_id').find(':selected').data('precio');
+    $('#precio_compra').val(precio);
+}
 
+function agregarProducto() {
+    idProducto = $('#producto_id').val();
+    idVenta = $('#venta_id').val();
+    nameProducto = ($('#producto_id option:selected').text()).split(' ')[1];
+    nameVenta = ($('#venta_id option:selected').text()).split(' ')[1];
+    cantidad = $('#cantidad').val();
+    precioCompra = $('#precio_compra').val();
+    precioVenta = $('#precio_venta').val();
 
-                if (parseInt(cantidad) > 0 && (cantidad % 1 == 0) && parseFloat(precioCompra) > 0 && parseFloat(
-                        precioVenta)) {
-                    if (parseFloat(precioVenta) > parseFloat(precioCompra)) {
-                        //calculo de los valores
-                        subtotal[cont] = round(cantidad * precioCompra);
-                        sumas += subtotal[cont];
-                        iva = round(sumas / 100 * impuesto);
-                        total = round(sumas + iva);
+    if ((idProducto != '' || idVenta != '') && cantidad != '' && precioCompra != '' && precioVenta != '') {
 
-                        fila = '<tr id="fila' + cont + '">' +
-                            '<th>' + (cont + 1) + '</th>' +
-                            '<td><input type="hidden" name="arrayidProducto[]" value="' + idProducto + '">' + nameProducto + '</td>' +
-                            '<td><input type="hidden" name="arrayCantidad[]" value="' + cantidad + '">' + cantidad + '</td>' +
-                            '<td><input type="hidden" name="arrayprecioCompra[]" value="' + precioCompra + '">' + precioCompra + '</td>' +
-                            '<td><input type="hidden" name="arrayprecioVenta[]" value="' + precioVenta + '">' + precioVenta + '</td>' +
-                            '<td>' + subtotal + '</td>' +
-                            '<td><button class="btn btn-secondary" type="button" onClick="eliminarProducto(' + cont +
-                            ')"><i class="fa    -solid fa-trash"></i></button></td>' +
-                            '</tr>';
+        if (parseInt(cantidad) > 0 && (cantidad % 1 == 0) && parseFloat(precioCompra) > 0 && parseFloat(precioVenta) > 0) {
+            if (parseFloat(precioVenta) > parseFloat(precioCompra)) {
+                // Calculo de los valores
+                subtotal[cont] = round(cantidad * precioVenta);
+                sumas += subtotal[cont];
+                total = round(sumas);
+
+                // Definir la variable `fila` dependiendo de si idProducto o idVenta está vacío
+                let fila;
+                if (idProducto != '') {
+                    fila = '<tr id="fila' + cont + '">' +
+                           '<th>' + (cont + 1) + '</th>' +
+                           '<td><input type="hidden" name="arrayidProducto[]" value="' + idProducto + '">' + nameProducto + '</td>' +
+                           '<td><input type="hidden" name="arrayCantidad[]" value="' + cantidad + '">' + cantidad + '</td>' +
+                           '<td><input type="hidden" name="arrayprecioCompra[]" value="' + precioCompra + '">' + precioCompra + '</td>' +
+                           '<td><input type="hidden" name="arrayprecioVenta[]" value="' + precioVenta + '">' + precioVenta + '</td>' +
+                           '<td>' + subtotal[cont] + '</td>' +
+                           '<td><button class="btn btn-secondary" type="button" onClick="eliminarProducto(' + cont + ')"><i class="fas fa-solid fa-trash"></i></button></td>' +
+                           '</tr>';
+                } else if (idVenta != '') {
+                    fila = '<tr id="fila' + cont + '">' +
+                           '<th>' + (cont + 1) + '</th>' +
+                           '<td><input type="hidden" name="arrayidVenta[]" value="' + idVenta + '">' + nameVenta + '</td>' +
+                           '<td><input type="hidden" name="arrayCantidad[]" value="' + cantidad + '">' + cantidad + '</td>' +
+                           '<td><input type="hidden" name="arrayprecioCompra[]" value="' + precioCompra + '">' + precioCompra + '</td>' +
+                           '<td><input type="hidden" name="arrayprecioVenta[]" value="' + precioVenta + '">' + precioVenta + '</td>' +
+                           '<td>' + subtotal[cont] + '</td>' +
+                           '<td><button class="btn btn-secondary" type="button" onClick="eliminarProducto(' + cont + ')"><i class="fas fa-solid fa-trash"></i></button></td>' +
+                           '</tr>';
+                }
 
                         $('#tabla_detalle').append(fila);
                         limpiarCampos();
@@ -325,10 +334,7 @@
                         desabilitarBotones();
 
                         $('#sumas').html(sumas);
-                        $('#iva').html(iva);
                         $('#total').html(total);
-
-                        $('#impuesto').val(iva);
                         $('#inputTotal').val(total);
                     } else {
                         showModal('Precio de compra/venta incorrecto');
@@ -341,21 +347,21 @@
             } else {
                 showModal('Faltan campos por llenar');
             }
+
+            $('#producto_id').val('').selectpicker('refresh');
+            $('#venta_id').val('').selectpicker('refresh');
         }
 
 
         function eliminarProducto(indice) {
             sumas -= round(subtotal[indice]);
-            iva = round(sumas / 100 * impuesto);
-            total = round(sumas + iva);
+            total = round(sumas);
 
             $('#sumas').html(sumas);
-            $('#iva').html(iva);
             $('#total').html(total);
 
             $('#fila' + indice).remove();
             desabilitarBotones();
-            $('#impuesto').val(iva);
             $('#inputTotal').val(total);
         }
 

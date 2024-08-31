@@ -10,7 +10,7 @@
     <title>Inicio de Sesion</title>
     <link href="{{ asset('css/template.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <link rel="icon" href="{{ asset('icon3.ico') }}">
+    <link rel="icon" href="{{ asset('express.ico') }}">
 </head>
 
 <body class="bg-primary">

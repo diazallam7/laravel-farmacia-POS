@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProveedoreRequest extends FormRequest
+class StoreIntereRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,12 +21,10 @@ class UpdateProveedoreRequest extends FormRequest
      */
     public function rules(): array
     {
-            $proveedore = $this->route('proveedore');
         return [
-            'razon_social' => 'required|max:45',
-            'direccion' => 'required|max:80',
-            'documento_id' => 'required|integer|exists:documentos,id',
-            'numero_documento' => 'required|max:20|unique:personas,numero_documento,'.$proveedore->persona->id 
+                'fecha_pago'=> 'required',
+                'monto_interes'=> 'nullable',
+                'producto_id'=> 'nullable',
         ];
     }
 }

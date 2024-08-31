@@ -33,21 +33,11 @@ class PermissionSeeder extends Seeder
             'crear-marca',
             'editar-marca',
             'eliminar-marca',
-            //presentacion
-            'ver-presentacione',
-            'crear-presentacione',
-            'editar-presentacione',
-            'eliminar-presentacione',
             //producto
             'ver-producto',
             'crear-producto',
             'editar-producto',
             'eliminar-producto',
-            //proveedore
-            'ver-proveedore',
-            'crear-proveedore',
-            'editar-proveedore',
-            'eliminar-proveedore',
             //venta
             'ver-venta',
             'crear-venta',
